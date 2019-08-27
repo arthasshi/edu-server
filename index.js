@@ -3,6 +3,7 @@ const app = new Koa();
 const path = require('path')
 const server = require('http').Server(app.callback())
 const shortId = require('shortid')
+const cors = require('koa-cors');
 
 const router = require('koa-router')();
 const koaBody = require('koa-body');
@@ -15,6 +16,8 @@ const db = Low(adapter)
 db.defaults({groups:[],users:[],projs:[],userInfo:[]}).write();
 
 const staticPath = './static'
+app.use(cors());
+
 
 app.use(static(path.join(__dirname,staticPath)))
 
@@ -43,6 +46,41 @@ router.get('/getinfos', koaBody(),
     ctx.body = JSON.stringify(db.get('userInfo').value());
   }
 );
+router.get('/getsome',koaBody(),(ctx)=>{
+  // console.log(ctx);
+  ctx.static = 200;
+  let data = [
+    {
+        index:0,
+        title:"标题",
+        view:1299
+    },
+    {
+        index:1,
+        title:"标题1",
+        view:99  
+    }
+];
+  ctx.body = JSON.stringify(data) ;
+})
+router.get("/gethonerdata",koaBody(),(ctx)=>{
+  ctx.static = 200;
+  let data = {
+    xiahong:{
+      heros:20,
+      skins:40,
+      victory:60,
+      faild:100
+    },
+   xiaoming:{
+      heros:30,
+      skins:20,
+      victory:60,
+      faild:80
+    }
+  }
+  ctx.body = JSON.stringify(data) ;
+})
  
 app.use(router.routes());
 server.listen(3000, () => {
